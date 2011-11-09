@@ -1,0 +1,1 @@
+mipsel-linux-uclibc-g++ main.cpp -o jurtris.dge -lSDL -lSDL_mixer -Ddingux

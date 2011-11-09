@@ -1,0 +1,219 @@
+# depslib dependency file v1.0
+1319366372 source:c:\cpp\windows\jurtris\main.cpp
+	"func.h"
+
+1319366656 c:\cpp\windows\jurtris\func.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<cstdlib>
+	<SDL.h>
+	<SDL_mixer.h>
+	<SDL.h>
+	<SDL_mixer.h>
+	<SDL.h>
+	<SDL_mixer.h>
+	<ctime>
+	<cmath>
+	<cstring>
+	"class.h"
+	"jfont.h"
+	"jfont.cpp"
+	"game.cpp"
+	"sdlextra.cpp"
+	"sync.cpp"
+	"eventblock.cpp"
+
+1073234948 c:\sdl-1.2.9\include\sdl.h
+	"SDL_main.h"
+	"SDL_types.h"
+	"SDL_getenv.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"SDL_timer.h"
+	"SDL_audio.h"
+	"SDL_cdrom.h"
+	"SDL_joystick.h"
+	"SDL_events.h"
+	"SDL_video.h"
+	"SDL_byteorder.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1073234948 c:\sdl-1.2.9\include\sdl_main.h
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+	"begin_code.h"
+	"close_code.h"
+
+1090382006 c:\sdl-1.2.9\include\sdl_types.h
+
+1105225982 c:\sdl-1.2.9\include\begin_code.h
+
+1073234948 c:\sdl-1.2.9\include\close_code.h
+
+1018532114 c:\sdl-1.2.9\include\sdl_getenv.h
+	"begin_code.h"
+	"close_code.h"
+
+1100561408 c:\sdl-1.2.9\include\sdl_error.h
+	"begin_code.h"
+	"close_code.h"
+
+1093024622 c:\sdl-1.2.9\include\sdl_rwops.h
+	<stdio.h>
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1105658696 c:\sdl-1.2.9\include\sdl_timer.h
+	"SDL_main.h"
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1093024622 c:\sdl-1.2.9\include\sdl_audio.h
+	<stdio.h>
+	"SDL_main.h"
+	"SDL_types.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"SDL_byteorder.h"
+	"begin_code.h"
+	"close_code.h"
+
+1100297358 c:\sdl-1.2.9\include\sdl_byteorder.h
+
+1113729390 c:\sdl-1.2.9\include\sdl_cdrom.h
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1090173906 c:\sdl-1.2.9\include\sdl_joystick.h
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1093024622 c:\sdl-1.2.9\include\sdl_events.h
+	"SDL_types.h"
+	"SDL_active.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_quit.h"
+	"begin_code.h"
+	"close_code.h"
+
+1073234948 c:\sdl-1.2.9\include\sdl_active.h
+	"begin_code.h"
+	"close_code.h"
+
+1090187860 c:\sdl-1.2.9\include\sdl_keyboard.h
+	"SDL_types.h"
+	"SDL_keysym.h"
+	"begin_code.h"
+	"close_code.h"
+
+1073234948 c:\sdl-1.2.9\include\sdl_keysym.h
+
+1113729390 c:\sdl-1.2.9\include\sdl_mouse.h
+	"SDL_types.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1104642676 c:\sdl-1.2.9\include\sdl_video.h
+	<stdio.h>
+	"SDL_types.h"
+	"SDL_mutex.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1073234948 c:\sdl-1.2.9\include\sdl_mutex.h
+	"SDL_main.h"
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1073234948 c:\sdl-1.2.9\include\sdl_quit.h
+
+1113729390 c:\sdl-1.2.9\include\sdl_version.h
+	"SDL_types.h"
+	"begin_code.h"
+	"close_code.h"
+
+1314115622 c:\cpp\windows\jurtris\class.h
+
+1319365710 c:\cpp\windows\jurtris\game.cpp
+
+1319302041 c:\cpp\windows\jurtris\sdlextra.cpp
+
+1319296803 c:\cpp\windows\jurtris\sync.cpp
+
+1319313722 c:\cpp\windows\jurtris\eventblock.cpp
+
+1314223760 c:\cpp\windows\jurtris\font.cpp
+
+1258242752 c:\sdl-1.2.9\include\sdl_mixer.h
+	"SDL_types.h"
+	"SDL_rwops.h"
+	"SDL_audio.h"
+	"SDL_endian.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1112182684 c:\sdl-1.2.9\include\sdl_endian.h
+	<stdio.h>
+	"SDL_types.h"
+	"SDL_rwops.h"
+	"SDL_byteorder.h"
+	"begin_code.h"
+	"close_code.h"
+
+1319297150 c:\cpp\windows\jurtris\jfont.h
+
+1319297082 c:\cpp\windows\jurtris\jfont.cpp
+
+1320181550 source:c:\cygwin\home\jurting\jurtris\main.cpp
+	"func.h"
+
+1320871938 c:\cygwin\home\jurting\jurtris\func.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<cstdlib>
+	"SDL/SDL.h"
+	"SDL/SDL_mixer.h"
+	<SDL.h>
+	<SDL_mixer.h>
+	<SDL.h>
+	<SDL_mixer.h>
+	<ctime>
+	<cmath>
+	<cstring>
+	"class.h"
+	"jfont.h"
+	"jfont.cpp"
+	"game.cpp"
+	"sdlextra.cpp"
+	"sync.cpp"
+	"eventblock.cpp"
+
+1319735274 c:\cygwin\home\jurting\jurtris\class.h
+
+1319293550 c:\cygwin\home\jurting\jurtris\jfont.h
+
+1320238099 c:\cygwin\home\jurting\jurtris\jfont.cpp
+
+1320871938 c:\cygwin\home\jurting\jurtris\game.cpp
+
+1320871945 c:\cygwin\home\jurting\jurtris\sdlextra.cpp
+
+1320259648 c:\cygwin\home\jurting\jurtris\sync.cpp
+
+1319743278 c:\cygwin\home\jurting\jurtris\eventblock.cpp
+

@@ -7,11 +7,11 @@
 	<File name="eventblock.cpp" open="1" top="0" tabpos="5">
 		<Cursor position="3371" topLine="130" />
 	</File>
-	<File name="func.h" open="1" top="1" tabpos="2">
-		<Cursor position="2056" topLine="101" />
+	<File name="func.h" open="1" top="0" tabpos="2">
+		<Cursor position="1912" topLine="101" />
 	</File>
 	<File name="game.cpp" open="1" top="0" tabpos="6">
-		<Cursor position="1089" topLine="23" />
+		<Cursor position="41287" topLine="1163" />
 	</File>
 	<File name="jfont.cpp" open="1" top="0" tabpos="8">
 		<Cursor position="598" topLine="12" />
@@ -22,8 +22,8 @@
 	<File name="main.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="140" topLine="12" />
 	</File>
-	<File name="sdlextra.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="243" topLine="0" />
+	<File name="sdlextra.cpp" open="1" top="1" tabpos="7">
+		<Cursor position="347" topLine="1" />
 	</File>
 	<File name="sync.cpp" open="1" top="0" tabpos="3">
 		<Cursor position="7678" topLine="242" />

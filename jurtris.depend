@@ -178,10 +178,10 @@
 
 1319297082 c:\cpp\windows\jurtris\jfont.cpp
 
-1320181550 source:c:\cygwin\home\jurting\jurtris\main.cpp
+1320944649 source:c:\cygwin\home\jurting\jurtris\main.cpp
 	"func.h"
 
-1320871938 c:\cygwin\home\jurting\jurtris\func.h
+1320945895 c:\cygwin\home\jurting\jurtris\func.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -209,11 +209,11 @@
 
 1320238099 c:\cygwin\home\jurting\jurtris\jfont.cpp
 
-1320871938 c:\cygwin\home\jurting\jurtris\game.cpp
+1320945823 c:\cygwin\home\jurting\jurtris\game.cpp
 
-1320871945 c:\cygwin\home\jurting\jurtris\sdlextra.cpp
+1320931131 c:\cygwin\home\jurting\jurtris\sdlextra.cpp
 
-1320259648 c:\cygwin\home\jurting\jurtris\sync.cpp
+1320946413 c:\cygwin\home\jurting\jurtris\sync.cpp
 
 1319743278 c:\cygwin\home\jurting\jurtris\eventblock.cpp
 

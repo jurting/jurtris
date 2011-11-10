@@ -43,13 +43,18 @@ void sync_drop()
 		 update_shadow=0;
 		 for (int iplayer=1; iplayer<=players; iplayer++)
 		 {
+            temp[0]=0;
+            if (blocktype[iplayer-1]==8) for (int i=y[iplayer-1]+1; i<22; i++)
+            {
+                if (block_collide(x[iplayer-1],i,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1) {temp[0]=1; break;}
+            }
             if (blocktype[iplayer-1]==-1) continue;
 
 		 	if ((input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
 		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
 		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))
 		 	{
-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1)
+		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
 		 		{
 		 			y[iplayer-1]++;
 		 			gameticks[iplayer][1]=SDL_GetTicks();
@@ -78,6 +83,8 @@ void sync_rot()
 		case GAMETYPE_COOP:
 		 for (int iplayer=1; iplayer<=players; iplayer++)
 		 {
+            if (blocktype[iplayer-1]==8 && block_collide(x[iplayer-1],y[iplayer-1],rot[iplayer-1],blocktype[iplayer-1],iplayer-1)!=1)
+                continue;
             if (blocktype[iplayer-1]==-1) continue;
 		 	if (input_p(but_up,iplayer-(game_type==GAMETYPE_SP)) or input_p(but_rot,iplayer-(game_type==GAMETYPE_SP)))
 		 	{
@@ -89,7 +96,7 @@ void sync_rot()
 	}
 }
 
-void sync_hardrop()
+bool sync_hardrop()
 {
     int temp_status=0;
     int temp_y=0;
@@ -107,6 +114,13 @@ void sync_hardrop()
 		 	    temp_status=0;
 
 		 		do {temp_status=block_collide(x[iplayer-1],temp_y+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1);
+
+		 	    if (blocktype[iplayer-1]==8 && block_collide(x[iplayer-1],temp_y,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)!=1)
+		 	    for (int i=y[iplayer-1]+1; i<22; i++)
+		 	    {
+		 	        if (block_collide(x[iplayer-1],i,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1) {temp_status=1; break;}
+		 	    }
+
 		 		if (temp_status==1) temp_y++;}
 		 		while (temp_status==1);
 
@@ -115,12 +129,13 @@ void sync_hardrop()
                     game_stats[STAT_DROPS]++;
                     y[iplayer-1]=temp_y;
                     place[iplayer-1]=((SDL_GetTicks()-gametimer)/falltime[iplayer-1]);
-                    if (!place_block(iplayer-1)) {stats_screen(); /*loose*/}
+                    if (!place_block(iplayer-1)) {stats_screen(); return 1;}
                 }
 		 	}
 		 }
 		break;
 	}
+	return 0;
 }
 
 void sync_hold()
@@ -146,16 +161,26 @@ void sync_hold()
 		 		else if (hold[iplayer-1]==0) {hold[iplayer-1]=blocktype[iplayer-1]; new_block(iplayer-1); holdused[iplayer-1]=1; game_stats[STAT_HOLDS]++;}
 		 		else if (!holdused[iplayer-1])
 		 		{
-		 			holdused[iplayer-1]=1;
-		 			temp[0]=blocktype[iplayer-1];
-		 			blocktype[iplayer-1]=hold[iplayer-1];
-		 			hold[iplayer-1]=temp[0];
-		 			x[iplayer-1]=xstart[iplayer-1];
-		 			y[iplayer-1]=ystart[iplayer-1];
-		 			rot[iplayer-1]=0;
-		 			game_stats[STAT_HOLDS]++;
-		 			for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
-		 				block[iplayer-1][ix][iy]=blockrot[blocktype[iplayer-1]][rot[iplayer-1]][ix][iy];
+		 		    if (opt[OPT_ALTHOLD])
+		 		    {
+		 		        holdused[iplayer-1]=1;
+                        althold[iplayer-1]=hold[iplayer-1];
+                        hold[iplayer-1]=0;
+                        game_stats[STAT_HOLDS]++;
+		 		    }
+		 		    else
+		 		    {
+		 		        holdused[iplayer-1]=1;
+                        temp[0]=blocktype[iplayer-1];
+                        blocktype[iplayer-1]=hold[iplayer-1];
+                        hold[iplayer-1]=temp[0];
+                        x[iplayer-1]=xstart[iplayer-1];
+                        y[iplayer-1]=ystart[iplayer-1];
+                        rot[iplayer-1]=0;
+                        game_stats[STAT_HOLDS]++;
+                        for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
+                            block[iplayer-1][ix][iy]=blockrot[blocktype[iplayer-1]][rot[iplayer-1]][ix][iy];
+		 		    }
 		 		}
 		 			sync_shadow();
 		 	}
@@ -164,13 +189,43 @@ void sync_hold()
 	}
 }
 
+void sync_flare()
+{
+    for (int iplayer=1; iplayer<=players; iplayer++)
+    {
+        if (input_p(but_flare,iplayer-(game_type==GAMETYPE_SP)) && opt[OPT_FLARE])
+        flare_use[iplayer-1]=1;
+        if (opt[OPT_FLARE])
+        {
+            for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<22; iy++) board_dark[ix][iy]=0;
+            for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<22; iy++) if (board_flare[ix][iy])
+            {
+                for (int ix2=ix-1; ix2<=ix+1; ix2++) for (int iy2=iy-1; iy2<=iy+1; iy2++)
+                    if (ix2>=0 && ix2<level_width && iy2>=0 && iy2<22)
+                    {
+                        board_dark[ix2][iy2-2]=1;
+                    }
+            }
+
+            if (flare_use[iplayer-1]) for (int ix=x[0]; ix<x[0]+4; ix++) for (int iy=y[0]; iy<y[0]+4; iy++) if (block[0][ix-x[0]][iy-y[0]])
+            {
+                for (int ix2=ix-1; ix2<=ix+1; ix2++) for (int iy2=iy-1; iy2<=iy+1; iy2++)
+                    if (ix2>=0 && ix2<level_width && iy2>=0 && iy2<22)
+                    {
+                        board_dark[ix2][iy2-2]=1;
+                    }
+            }
+        }
+    }
+}
+
 int sync_pause()
 {
 	return pause_menu();
 	return 1;
 }
 
-void sync_fall()
+bool sync_fall()
 {
 	switch(game_type)
 	{
@@ -181,23 +236,36 @@ void sync_fall()
 		 {
             if (blocktype[iplayer-1]==-1) continue;
 
-		 	if ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] && !opt[OPT_TRAINING])
+		 	if ( ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] or
+            (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
+		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
+		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP))) ) && !opt[OPT_TRAINING])
 		 	{
-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1)
+		 	    temp[0]=0;
+		 	    if (blocktype[iplayer-1]==8) for (int i=y[iplayer-1]+1; i<22; i++)
+		 	    {
+		 	        if (block_collide(x[iplayer-1],i,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1) {temp[0]=1; break;}
+		 	    }
+
+		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
 		 		{
 		 			y[iplayer-1]++;
-		 			place[iplayer-1]=(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
+		 			if (opt[OPT_SLIDE]) place[iplayer-1]=1+(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
 		 			easyspins[iplayer-1]=0;
 		 			gameticks[iplayer][1]=SDL_GetTicks();
 		 			update_shadow=1;
 		 		}
-		 		if ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] &&
+		 		else if (( (int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] or
+                (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
+                SDL_GetTicks()-gameticks[iplayer][1]>48) or
+                input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))) &&
 		 		!block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1))
 		 		{
-		 			if (!place_block(iplayer-1)) {stats_screen(); /*loose*/}
+		 			if (!place_block(iplayer-1)) {stats_screen(); return 1;}
 		 			gameticks[iplayer][1]=SDL_GetTicks();
 		 		}
 		 		fall[iplayer-1]=(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
+		 		if (!opt[OPT_SLIDE]) place[iplayer-1]=(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
 		 	}
 		 }
 
@@ -208,6 +276,7 @@ void sync_fall()
 		 }}
 		break;
 	}
+	return 0;
 }
 
 void sync_draw()
@@ -215,26 +284,44 @@ void sync_draw()
 	switch(game_type)
 	{
 		case GAMETYPE_SP:
+		 apply_surface((16+level_width*8)*scale_x,176*scale_y,sur_border,screen,&border_rect[0]);
+		 apply_surface(8*scale_x,176*scale_y,sur_border,screen,&border_rect[1]);
+		 apply_surface(8*scale_x,8*scale_y,sur_border,screen,&border_rect[2]);
+		 apply_surface((16+level_width*8)*scale_x,8*scale_y,sur_border,screen,&border_rect[3]);
+
+		 for (int ix=0; ix<level_width; ix++)
+		 {
+            apply_surface((16+ix*8)*scale_x,8*scale_y,sur_border,screen,&border_rect[4]);
+            apply_surface((16+ix*8)*scale_x,176*scale_y,sur_border,screen,&border_rect[4]);
+		 }
+		 for (int iy=0; iy<20; iy++)
+		 {
+            apply_surface(8*scale_x,(16+iy*8)*scale_y,sur_border,screen,&border_rect[5]);
+            apply_surface((16+level_width*8)*scale_x,(16+iy*8)*scale_y,sur_border,screen,&border_rect[5]);
+		 }
+		 apply_surface(8*scale_x,176*scale_y,sur_hold,screen);
+
+
 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
 		 {
 		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
 		 		apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[board[ix][iy+2]]);
-		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[8]);
+		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[9]);
 		 }
-
 
 		 for (int iy=0; iy<4; iy++) for (int ix=0; ix<4; ix++)
 		 {
 		 	if (block[0][ix][iy] && shadow_y[0]+iy>=2 && opt[OPT_SHADOW])
-		 		apply_surface((16+(x[0]+ix)*8)*scale_x,((shadow_y[0]+iy)*8)*scale_y,sur_block,screen,&block_rect[8]);
+		 		apply_surface((16+(x[0]+ix)*8)*scale_x,((shadow_y[0]+iy)*8)*scale_y,sur_block,screen,&block_rect[9]);
 		 	if (block[0][ix][iy] && y[0]+iy>=2) apply_surface((16+(x[0]+ix)*8)*scale_x,((y[0]+iy)*8)*scale_y,sur_block,screen,&block_rect[blocktype[0]]);
 		 	if (blockrot[hold[0]][0][ix][iy]) apply_surface((16+previewx[hold[0]]+(ix*8))*scale_x,
-		 	(176+previewy[hold[0]]+(iy*8))*scale_y,sur_block,screen,&block_rect[hold[0]]);
+		 	(180+previewy[hold[0]]+(iy*8))*scale_y,sur_block,screen,&block_rect[hold[0]]);
 		 }
 
 
 		 for (int i=0; i<opt_preview; i++)
 		 {
+            apply_surface((104)*scale_x,(8+(i*32))*scale_y,sur_square,screen);
 		 	if (opt[OPT_TRAINING])
 		 	{
 		 		temp[0]=blocktype[0]+i;
@@ -243,7 +330,7 @@ void sync_draw()
 		 		{
 		 			if (blockrot[temp[0]][0][ix][iy])
 		 				apply_surface((112+previewx[temp[0]]+ix*8)*scale_x,
-		 				               (16+previewy[temp[0]]+(i*24)+iy*8)*scale_y,
+		 				               (12+previewy[temp[0]]+(i*32)+iy*8)*scale_y,
 		 				sur_block,screen,&block_rect[temp[0]]);
 		 		}
 		 	}
@@ -253,7 +340,7 @@ void sync_draw()
 		 		{
 		 			if (blockrot[preview[0][i]][0][ix][iy])
 		 				apply_surface((112+previewx[preview[0][i]]+ix*8)*scale_x,
-		 				               (16+previewy[preview[0][i]]+(i*24)+iy*8)*scale_y,
+		 				               (12+previewy[preview[0][i]]+(i*32)+iy*8)*scale_y,
 		 				sur_block,screen,&block_rect[preview[0][i]]);
 		 		}
 		 	}
@@ -262,16 +349,35 @@ void sync_draw()
 		 //font.draw(112*scale_x,152*scale_y,game_stats[STAT_SCORE],screen);
 		 //font.draw(112*scale_x,168*scale_y,fall_lines[0],screen);
 
-		 font.draw(112*scale_x,136*scale_y,"Lines: ",screen);
-		 font.draw(112*scale_x+font.stringw("Lines: "),136*scale_y,fall_lines[0],screen);
-		 font.draw(112*scale_x,152*scale_y,"Level: ",screen);
-		 font.draw(112*scale_x+font.stringw("Level: "),152*scale_y,level[0],screen);
-		 font.draw(112*scale_x,168*scale_y,"Score: ",screen);
-		 font.draw(112*scale_x+font.stringw("Score: "),168*scale_y,game_stats[STAT_SCORE],screen);
+		 font.draw(112*scale_x,184*scale_y,"Lines: ",screen);
+		 font.draw(112*scale_x+font.stringw("Lines: "),(184)*scale_y,fall_lines[0],screen);
+		 font.draw(112*scale_x,(184+16)*scale_y,"Level: ",screen);
+		 font.draw(112*scale_x+font.stringw("Level: "),(184+16)*scale_y,level[0],screen);
+		 font.draw(112*scale_x,(184+32)*scale_y,"Score: ",screen);
+		 font.draw(112*scale_x+font.stringw("Score: "),(184+32)*scale_y,game_stats[STAT_SCORE],screen);
 		break;
 
 
 		case GAMETYPE_COOP:
+		 apply_surface((16+level_width*8)*scale_x,176*scale_y,sur_border,screen,&border_rect[0]);
+		 apply_surface(8*scale_x,176*scale_y,sur_border,screen,&border_rect[1]);
+		 apply_surface(8*scale_x,8*scale_y,sur_border,screen,&border_rect[2]);
+		 apply_surface((16+level_width*8)*scale_x,8*scale_y,sur_border,screen,&border_rect[3]);
+
+		 for (int ix=0; ix<level_width; ix++)
+		 {
+            apply_surface((16+ix*8)*scale_x,8*scale_y,sur_border,screen,&border_rect[4]);
+            apply_surface((16+ix*8)*scale_x,176*scale_y,sur_border,screen,&border_rect[4]);
+		 }
+		 for (int iy=0; iy<20; iy++)
+		 {
+            apply_surface(8*scale_x,(16+iy*8)*scale_y,sur_border,screen,&border_rect[5]);
+            apply_surface((16+level_width*8)*scale_x,(16+iy*8)*scale_y,sur_border,screen,&border_rect[5]);
+		 }
+
+		 apply_surface(8*scale_x,176*scale_y,sur_hold,screen);
+
+
 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
 		 {
 		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
@@ -283,14 +389,14 @@ void sync_draw()
 		 {
             //if (hold[iplayer-1]<=0) continue;
 		 	if (blockrot[hold[iplayer-1]][iplayer-1][ix][iy]) apply_surface((16+(iplayer-1)*64+previewx[hold[iplayer-1]]+(ix*8))*scale_x,
-		 		(176+previewy[hold[iplayer-1]]+(iy*8))*scale_y,sur_block,screen,&block_rect[iplayer]);
+		 		(180+previewy[hold[iplayer-1]]+(iy*8))*scale_y,sur_block,screen,&block_rect[iplayer]);
 		 }
 
 		 for (int iplayer=1; iplayer<=players; iplayer++) for (int iy=0; iy<4; iy++) for (int ix=0; ix<4; ix++)
 		 {
             if (blocktype[iplayer-1]==-1) continue;
 		 	if (block[iplayer-1][ix][iy] && shadow_y[iplayer-1]+iy>=2 && opt[OPT_SHADOW])
-		 		apply_surface((16+(x[iplayer-1]+ix)*8)*scale_x,((shadow_y[iplayer-1]+iy)*8)*scale_y,sur_block,screen,&block_rect[8]);
+		 		apply_surface((16+(x[iplayer-1]+ix)*8)*scale_x,((shadow_y[iplayer-1]+iy)*8)*scale_y,sur_block,screen,&block_rect[9]);
 		 }
 
 		 for (int iplayer=1; iplayer<=players; iplayer++) for (int iy=0; iy<4; iy++) for (int ix=0; ix<4; ix++)

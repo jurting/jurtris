@@ -24,8 +24,8 @@
 #define PI 3.14159265
 using namespace std;
 
-const char VERSION[]="0.8.5";
-const double D_VERSION=0.0805;
+const char VERSION[]="0.9.3";
+const double D_VERSION=0.0903;
 
 #define GAMETYPE_SP 0
 #define GAMETYPE_COOP 1
@@ -37,15 +37,18 @@ bool time_flips=0;
 //Surfaces
 SDL_Surface *screen=NULL;
 SDL_Surface *sur_block=NULL;
+SDL_Surface *sur_border=NULL;
+SDL_Surface *sur_square=NULL;
+SDL_Surface *sur_hold=NULL;
 SDL_Surface *menu_back=NULL;
 SDL_Surface *menu_back_dark=NULL;
 SDL_Surface *textbar=NULL;
 
 //SDL var's
 SDL_Rect screenrect;
-SDL_Rect rfont[256];
+SDL_Rect border_rect[6];
 SDL_Rect menu_iconrect[7];
-SDL_Rect block_rect[9];
+SDL_Rect block_rect[10];
 SDL_Rect temp_rect;
 SDL_Rect textbar_rect[3];
 Uint32 alpha_col;
@@ -69,16 +72,17 @@ bool board_dark[32][22];
 bool board_flashlight[32];
 bool board_flare[32][22];
 bool thunder=0;
-bool flare_use=0;
+bool flare_use[10];
 unsigned char block[10][4][4];
-unsigned char blockrot[8][4][4][4];
+unsigned char blockrot[9][4][4][4];
 unsigned char preview[10][5];
-int previewx[8];
-int previewy[8];
+int previewx[9];
+int previewy[9];
 bool loaded=0;
 
 int hold[10];
 int holdused[10];
+int althold[10];
 int blocktype[10];
 int rot[10];
 int x[10];
@@ -118,7 +122,7 @@ int audio_buffers = 2048;
 
 //menu var's
 #define MENU_MAX 3
-int menu_num[MENU_MAX]={7,0,3};
+int menu_num[MENU_MAX]={8,0,3};
 int menu_sel[MENU_MAX];
 int menu_set=0;
 jstr menustr[MENU_MAX][16];
@@ -131,16 +135,20 @@ Jfont font;
 #define OPT_NUDGE 1
 #define OPT_EASYSPIN 2
 #define OPT_SHADOW 3
-#define OPT_DARK 4
-#define OPT_FLASHLIGHT 5
-#define OPT_THUNDER 6
-#define OPT_TRAINING 7
-#define OPT_BAG 8
+#define OPT_SLIDE 4
+#define OPT_ALTHOLD 5
+#define OPT_GHOST 6
+#define OPT_DARK 7
+#define OPT_FLASHLIGHT 8
+#define OPT_THUNDER 9
+#define OPT_FLARE 10
+#define OPT_TRAINING 11
+#define OPT_BAG 12
 char opt_name []="Save";
 char opt_name2[]="Save2";
 char opt_name3[]="Save3";
 int opt_preview=0;
-bool opt[9];
+bool opt[13];
 
 
 //event vars
@@ -169,7 +177,10 @@ int joydead=1600;
 #define but_hard_drop 5
 #define but_hold 6
 #define but_rot 7
-#define but_pause 8
+#define but_flare 8
+#define but_pause 9
+
+#define but_number 10
 
 #ifdef dingux
 int joystick_sel[10]={-1,-1,-1};
@@ -181,9 +192,9 @@ bool HWS=0;
 #else
 bool HWS=0;
 #endif
-int but[10][9]={{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_LCTRL,SDLK_LALT,SDLK_LSHIFT,SDLK_LCTRL,SDLK_RETURN},
-{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,-1,-1,-1,SDLK_LCTRL,SDLK_RETURN},
-{SDLK_LCTRL,SDLK_LALT,SDLK_LSHIFT,SDLK_SPACE,-1,-1,-1,SDLK_LCTRL,SDLK_RETURN}};
+int but[10][but_number]={{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_LCTRL,SDLK_LALT,SDLK_LSHIFT,SDLK_LCTRL,SDLK_SPACE,SDLK_RETURN},
+{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,-1,-1,-1,SDLK_LCTRL,-1,SDLK_RETURN},
+{SDLK_LCTRL,SDLK_LALT,SDLK_LSHIFT,SDLK_SPACE,-1,-1,-1,SDLK_LCTRL,-1,SDLK_RETURN}};
 int but_type[10][9]={{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
 
 #elif caanoo
@@ -202,11 +213,12 @@ int scale_x=2;
 int scale_y=2;
 int screen_bit=16;
 bool HWS=0;
-int but[10][9]={{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_RETURN,SDLK_SPACE,'c',SDLK_UP,SDLK_ESCAPE},
-{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_RETURN,SDLK_SPACE,'c',SDLK_UP,SDLK_ESCAPE},
-{0,1,0,1,2,1,0,2,8}};
-int but_type[10][9]={{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{3,3,4,4,5,5,5,5,5}};
+int but[10][but_number]={{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_RETURN,SDLK_SPACE,'c','z','x',SDLK_ESCAPE},
+{SDLK_RIGHT,SDLK_DOWN,SDLK_LEFT,SDLK_UP,SDLK_RETURN,SDLK_SPACE,'c','z','x',SDLK_ESCAPE},
+{0,1,0,1,2,1,0,2,3,8}};
+int but_type[10][but_number]={{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{3,3,4,4,5,5,5,5,5}};
 #endif
+bool music_enabled=1;
 
 
 char parsechar[8];
@@ -221,6 +233,7 @@ double cfg_getdouble(char str[32]);
 bool str_match(char *str,char *str2);
 int str_num(char *str);
 int main_menu(int menu_choice);
+void credit_menu();
 void options_menu();
 char* get_bind_str(int Abut, int Aplayer);
 char* get_bindtype_str(int Abut, int Aplayer);
@@ -247,10 +260,11 @@ Uint32 GetPixel(SDL_Surface *screen,int x, int y);
 void sync_move();
 void sync_drop();
 void sync_rot();
-void sync_hardrop();
+bool sync_hardrop();
 void sync_hold();
+void sync_flare();
 int sync_pause();
-void sync_fall();
+bool sync_fall();
 void sync_draw();
 void sync_init();
 void sync_shadow();

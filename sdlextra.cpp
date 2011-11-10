@@ -3,6 +3,9 @@ void clearSDL()
     for (int i=0; i<MENU_MAX; i++) for (int i2=0; i2<menu_num[i]; i2++) delete [] menustr[i][i2].ch;
 	font.clear();
 	SDL_FreeSurface(sur_block);
+	SDL_FreeSurface(sur_border);
+	SDL_FreeSurface(sur_square);
+	SDL_FreeSurface(sur_hold);
 	SDL_FreeSurface(textbar);
 	SDL_FreeSurface(menu_back);
 	SDL_FreeSurface(menu_back_dark);

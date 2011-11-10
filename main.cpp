@@ -11,9 +11,13 @@ int main(int argc, char* argv[])
 	opt[OPT_NUDGE]=1;
 	opt[OPT_EASYSPIN]=1;
 	opt[OPT_SHADOW]=1;
+	opt[OPT_SLIDE]=1;
+	opt[OPT_ALTHOLD]=0;
+	opt[OPT_GHOST]=0;
 	opt[OPT_DARK]=0;
 	opt[OPT_FLASHLIGHT]=0;
 	opt[OPT_THUNDER]=0;
+	opt[OPT_FLARE]=0;
 	opt[OPT_TRAINING]=0;
 	opt[OPT_BAG]=0;
 

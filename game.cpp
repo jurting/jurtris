@@ -28,10 +28,21 @@ void game_init()
 	mus_drop=Mix_LoadWAV("sound/drop.wav");
 	mus_music=Mix_LoadMUS("music/allsort.mod");
 	sur_block=load_img("gfx/block.bmp");
+	sur_border=load_img("gfx/border.bmp");
+	sur_square=load_img("gfx/square.bmp");
+	sur_hold=load_img("gfx/hold.bmp");
 	textbar=load_img("gfx/textbar.bmp");
 	menu_back=load_img("gfx/menu_background.bmp");
 	menu_back_dark=load_img("gfx/menu_background_dark.bmp");
 	Mix_AllocateChannels(16);
+
+	for (int i=0; i<6; i++)
+	{
+	    border_rect[i].x=i*(8*scale_x);
+	    border_rect[i].y=0;
+	    border_rect[i].w=8*scale_x;
+	    border_rect[i].h=8*scale_y;
+	}
 
 	for (int i=0; i<joynum; i++) joy[i].joy=SDL_JoystickOpen(i);
 
@@ -41,7 +52,7 @@ void game_init()
 		menu_iconrect[i].w=64*scale_x;
 		menu_iconrect[i].h=64*scale_y;
 	}
-	for (int i=0; i<9; i++)
+	for (int i=0; i<10; i++)
 	{
 		block_rect[i].x=(i*8)*scale_x;
 		block_rect[i].y=0;
@@ -82,7 +93,9 @@ void generate_config(bool overwrite)
     "//0: Keyboard. button=ascii id" << endl <<
     "//1: Joystick +axis. button=axis" << endl <<
     "//2: Joystick -axis. button=axis" << endl <<
-    "//3: Joystick button. button=button id" << endl <<
+    "//3: Joystick +dpad. button=x or y" << endl <<
+    "//4: Joystick -dpad. button=x or y" << endl <<
+    "//5: Joystick button. button=button id" << endl <<
 	"scaling_x=" << 1 << endl <<
 	"scaling_y=" << 1 << endl <<
 	"scaling=" << 1 << endl <<
@@ -92,6 +105,7 @@ void generate_config(bool overwrite)
 	#else
 	"HWS=" << 0 << endl <<
 	#endif
+	"music=" << 1 << endl <<
 	"joystick=" << -1 << endl <<
 	"joystick_deadzone=" << 1600 << endl <<
 	"button_right=" << SDLK_RIGHT << endl <<
@@ -102,6 +116,7 @@ void generate_config(bool overwrite)
 	"button_hard_drop=" << SDLK_LALT << endl <<
 	"button_hold=" << SDLK_LSHIFT << endl <<
 	"button_rotate=" << SDLK_LCTRL << endl <<
+	"button_flare=" << SDLK_SPACE << endl <<
 	"button_pause=" << SDLK_RETURN << endl <<
 	"button_type_right=" << 0 << endl <<
 	"button_type_down="  << 0  << endl <<
@@ -111,6 +126,7 @@ void generate_config(bool overwrite)
 	"button_type_hard_drop=" << 0 << endl <<
 	"button_type_hold=" << 0 << endl <<
 	"button_type_rotate=" << 0 << endl <<
+	"button_type_flare=" << 0 << endl <<
 	"button_type_pause=" << 0 << endl <<
 
 	"MPbutton_P1_right=" << SDLK_RIGHT << endl <<
@@ -121,6 +137,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P1_hard_drop=" << -1 << endl <<
 	"MPbutton_P1_hold=" << -1 << endl <<
 	"MPbutton_P1_rotate=" << SDLK_UP << endl <<
+	"MPbutton_P1_flare=" << -1 << endl <<
 	"MPbutton_P1_pause=" << SDLK_RETURN << endl <<
 	"MPbutton_P1_type_right=" << 0 << endl <<
 	"MPbutton_P1_type_down="  << 0  << endl <<
@@ -130,6 +147,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P1_type_hard_drop=" << 0 << endl <<
 	"MPbutton_P1_type_hold=" << 0 << endl <<
 	"MPbutton_P1_type_rotate=" << 0 << endl <<
+	"MPbutton_P1_type_flare=" << 0 << endl <<
 	"MPbutton_P1_type_pause=" << 0 << endl <<
 
 	"MPbutton_P2_right=" << SDLK_LCTRL << endl <<
@@ -140,6 +158,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P2_hard_drop=" << -1 << endl <<
 	"MPbutton_P2_hold=" << -1 << endl <<
 	"MPbutton_P2_rotate=" << SDLK_SPACE << endl <<
+	"MPbutton_P2_flare=" << -1 << endl <<
 	"MPbutton_P2_pause=" << SDLK_RETURN << endl <<
 	"MPbutton_P2_type_right=" << 0 << endl <<
 	"MPbutton_P2_type_down="  << 0  << endl <<
@@ -149,6 +168,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P2_type_hard_drop=" << 0 << endl <<
 	"MPbutton_P2_type_hold=" << 0 << endl <<
 	"MPbutton_P2_type_rotate=" << 0 << endl <<
+	"MPbutton_P2_type_flare=" << 0 << endl <<
 	"MPbutton_P2_type_pause=" << 0;
 
 
@@ -196,12 +216,15 @@ void generate_config(bool overwrite)
     "//0: Keyboard. button=ascii id" << endl <<
     "//1: Joystick +axis. button=axis" << endl <<
     "//2: Joystick -axis. button=axis" << endl <<
-    "//3: Joystick button. button=button id" << endl <<
+    "//3: Joystick +dpad. button=x or y" << endl <<
+    "//4: Joystick -dpad. button=x or y" << endl <<
+    "//5: Joystick button. button=button id" << endl <<
 	"scaling_x=" << 2 << endl <<
 	"scaling_y=" << 2 << endl <<
 	"scaling=" << 2 << endl <<
 	"screen_bit=" << 16 << endl <<
 	"HWS=" << 0 << endl <<
+	"music=" << 1 << endl <<
 	"joystick=" << -1 << endl <<
 	"joystick_deadzone=" << 1600 << endl <<
 	"button_right=" << SDLK_RIGHT << endl <<
@@ -211,7 +234,8 @@ void generate_config(bool overwrite)
 	"button_menuOK="    << SDLK_RETURN << endl <<
 	"button_hard_drop=" << SDLK_SPACE << endl <<
 	"button_hold=" << (int)'c' << endl <<
-	"button_rotate=" << SDLK_UP << endl <<
+	"button_rotate=" << 'z' << endl <<
+	"button_flare=" << 'x' << endl <<
 	"button_pause=" << SDLK_ESCAPE << endl <<
 	"button_type_right=" << 0 << endl <<
 	"button_type_down="  << 0  << endl <<
@@ -221,6 +245,7 @@ void generate_config(bool overwrite)
 	"button_type_hard_drop=" << 0 << endl <<
 	"button_type_hold=" << 0 << endl <<
 	"button_type_rotate=" << 0 << endl <<
+	"button_type_flare=" << 0 << endl <<
 	"button_type_pause=" << 0 << endl <<
 
 
@@ -233,6 +258,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P1_hard_drop=" << SDLK_SPACE << endl <<
 	"MPbutton_P1_hold=" << (int)'c' << endl <<
 	"MPbutton_P1_rotate=" << SDLK_UP << endl <<
+	"MPbutton_P1_flare=" << 'x' << endl <<
 	"MPbutton_P1_pause=" << SDLK_ESCAPE << endl <<
 	"MPbutton_P1_type_right=" << 0 << endl <<
 	"MPbutton_P1_type_down="  << 0  << endl <<
@@ -242,6 +268,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P1_type_hard_drop=" << 0 << endl <<
 	"MPbutton_P1_type_hold=" << 0 << endl <<
 	"MPbutton_P1_type_rotate=" << 0 << endl <<
+	"MPbutton_P1_type_flare=" << 0 << endl <<
 	"MPbutton_P1_type_pause=" << 0 << endl <<
 
     "joystick_P2=" << 0 << endl <<
@@ -253,6 +280,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P2_hard_drop=" << 1 << endl <<
 	"MPbutton_P2_hold=" << 0 << endl <<
 	"MPbutton_P2_rotate=" << 2 << endl <<
+	"MPbutton_P2_flare=" << 3 << endl <<
 	"MPbutton_P2_pause=" << 8 << endl <<
 	"MPbutton_P2_type_right=" << 3 << endl <<
 	"MPbutton_P2_type_down="  << 3  << endl <<
@@ -262,6 +290,7 @@ void generate_config(bool overwrite)
 	"MPbutton_P2_type_hard_drop=" << 5 << endl <<
 	"MPbutton_P2_type_hold=" << 5 << endl <<
 	"MPbutton_P2_type_rotate=" << 5 << endl <<
+	"MPbutton_P2_type_flare=" << 5 << endl <<
 	"MPbutton_P2_type_pause=" << 5;
 	#endif
 	fout.close();
@@ -313,7 +342,8 @@ void load_config()
 		else if (str_match(matchchar,(char*)"scaling_y"))  scale_y=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"screen_bit")) screen_bit=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"scaling"))   {scale_x=strtod(resultchar,0); scale_y=strtod(resultchar,0);}
-		else if (str_match(matchchar,(char*)"HWS"))       HWS=strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"HWS"))        HWS=strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"music"))      music_enabled=strtod(resultchar,0);
 		//Controls
 		else if (str_match(matchchar,(char*)"joystick")) joystick_sel[0]=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"joystick_deadzone")) joydead=strtod(resultchar,0);
@@ -325,6 +355,7 @@ void load_config()
 		else if (str_match(matchchar,(char*)"button_hard_drop")) but[0][but_hard_drop]=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_hold"))      but[0][but_hold]     =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_rotate"))    but[0][but_rot]      =strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"button_flare"))     but[0][but_flare]    =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_pause"))     but[0][but_pause]    =strtod(resultchar,0);
 
 		else if (str_match(matchchar,(char*)"button_type_right"))     but_type[0][but_right]    =strtod(resultchar,0);
@@ -335,6 +366,7 @@ void load_config()
 		else if (str_match(matchchar,(char*)"button_type_hard_drop")) but_type[0][but_hard_drop]=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_type_hold"))      but_type[0][but_hold]     =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_type_rotate"))    but_type[0][but_rot]      =strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"button_type_flare"))     but_type[0][but_flare]    =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"button_type_pause"))     but_type[0][but_pause]    =strtod(resultchar,0);
 
 
@@ -348,6 +380,7 @@ void load_config()
 		else if (str_match(matchchar,(char*)"MPbutton_P#_hard_drop")) but[str_num(matchchar)][but_hard_drop]=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_hold"))      but[str_num(matchchar)][but_hold]     =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_rotate"))    but[str_num(matchchar)][but_rot]      =strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"MPbutton_P#_flare"))     but[str_num(matchchar)][but_flare]    =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_pause"))     but[str_num(matchchar)][but_pause]    =strtod(resultchar,0);
 
 		else if (str_match(matchchar,(char*)"MPbutton_P#_type_right"))     but_type[str_num(matchchar)][but_right]    =strtod(resultchar,0);
@@ -358,6 +391,7 @@ void load_config()
 		else if (str_match(matchchar,(char*)"MPbutton_P#_type_hard_drop")) but_type[str_num(matchchar)][but_hard_drop]=strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_type_hold"))      but_type[str_num(matchchar)][but_hold]     =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_type_rotate"))    but_type[str_num(matchchar)][but_rot]      =strtod(resultchar,0);
+		else if (str_match(matchchar,(char*)"MPbutton_P#_type_flare"))     but_type[str_num(matchchar)][but_flare]    =strtod(resultchar,0);
 		else if (str_match(matchchar,(char*)"MPbutton_P#_type_pause"))     but_type[str_num(matchchar)][but_pause]    =strtod(resultchar,0);
 	}
 
@@ -407,9 +441,10 @@ int main_menu(int menu_choice)
     strcpy(menustr[0][1].ch,"Multiplayer");
     strcpy(menustr[0][2].ch,"Hi-scores (WIP)");
     strcpy(menustr[0][3].ch,"Statistic (WIP)");
-    strcpy(menustr[0][4].ch,"Options");
-    strcpy(menustr[0][5].ch,"Quit");
-    strcpy(menustr[0][6].ch,"I am a pen");
+    strcpy(menustr[0][4].ch,"Credits");
+    strcpy(menustr[0][5].ch,"Options");
+    strcpy(menustr[0][6].ch,"Quit");
+    strcpy(menustr[0][7].ch,"I am a pen");
 
     strcpy(menustr[2][0].ch,"Online (WIP)");
     strcpy(menustr[2][1].ch,"Hot-seat");
@@ -469,10 +504,15 @@ int main_menu(int menu_choice)
                  break;
 
                  case 4:
+                  credit_menu();
+                 break;
+
+
+                 case 5:
                   options_menu();
                  break;
 
-                 case 5:
+                 case 6:
                   return 0;
                  break;
              }
@@ -752,6 +792,24 @@ int main_menu(int menu_choice)
 	return 0;*/
 }
 
+void credit_menu()
+{
+    while(!quit)
+    {
+        eventblock();
+        if (keyp!=-1) break;
+        font.draw(0,0,"Johnny 'Jurting' Enbuske:",screen);
+        font.draw(8*scale_x,font.h,"Programming and 'art' (:P)",screen);
+        font.draw(0,font.h*3,"Zear:",screen);
+        font.draw(8*scale_x,font.h*4,"Game ideas",screen);
+        font.draw(0,font.h*6,"Made with SDL and SDL_Mixer",screen);
+        font.draw(8*scale_x,font.h*7,"www.libSDL.org",screen);
+
+        SDL_Flip(screen);
+        SDL_FillRect(screen,&screenrect,SDL_MapRGB(screen->format,0,0,0));
+    }
+}
+
 void options_menu()
 {
     int sel=0;
@@ -906,8 +964,8 @@ char* get_bindtype_str(int Abut, int Aplayer)
 int game_options()
 {
     int sel=0;
-    jstr menu_str[11];
-    for (int i=0; i<11; i++) menu_str[i].ch=new char[16];
+    jstr menu_str[15];
+    for (int i=0; i<15; i++) menu_str[i].ch=new char[16];
 
     menu_str[0].ch=(char*)"Start";
     menu_str[1].ch=(char*)"Load (WIP)";
@@ -917,9 +975,13 @@ int game_options()
 	menu_str[5].ch=(char*)"Nudge: ";
 	menu_str[6].ch=(char*)"Easyspin: ";
 	menu_str[7].ch=(char*)"Shadow: ";
-	menu_str[8].ch=(char*)"Dark: ";
-	menu_str[9].ch=(char*)"Flashlight: ";
-	menu_str[10].ch=(char*)"Thunder: ";
+	menu_str[8].ch=(char*)"Slide: ";
+	menu_str[9].ch=(char*)"Alt. hold: ";
+	menu_str[10].ch=(char*)"1x1 ghost piece: ";
+	menu_str[11].ch=(char*)"Dark: ";
+	menu_str[12].ch=(char*)"Flashlight: ";
+	menu_str[13].ch=(char*)"Thunder: ";
+	menu_str[14].ch=(char*)"Flare: ";
 
 	Uint32 tempcolor=SDL_MapRGB(screen->format,250,150,0);
 
@@ -929,8 +991,8 @@ int game_options()
 
         if (input_p(but_down,0)) {sel++; if (sel==2) sel=3;}
         if (input_p(but_up,0)){sel--; if (sel==2) sel=1;}
-        if (sel>=11) sel=0;
-        if (sel<0) sel=10;
+        if (sel>=15) sel=0;
+        if (sel<0) sel=14;
 
         if (input_p(but_menuOK,0))
         {
@@ -963,10 +1025,10 @@ int game_options()
         temp_rect.h=font.h;
         SDL_FillRect(screen,&temp_rect,tempcolor);
 
-        for (int i=0; i<11; i++)
+        for (int i=0; i<15; i++)
             font.draw(0,i*font.h,menu_str[i].ch,screen);
         font.draw(font.stringw(menu_str[3].ch),3*font.h,opt_preview,screen);
-        for (int i=4; i<11; i++)
+        for (int i=4; i<15; i++)
         {
             if (opt[i-4]) font.draw(font.stringw(menu_str[i].ch),i*font.h,"On",screen);
             else font.draw(font.stringw(menu_str[i].ch),i*font.h,"Off",screen);
@@ -990,13 +1052,25 @@ int game_options()
              font.draw(160*scale_x,0,"Shows a shadow under your piece",screen,320*scale_x);
             break;
             case 8:
-             font.draw(160*scale_x,0,"Makes the screen dark,\ngood memory training.\n\nFlashlight, thunder or\nflare recommended\nwhen using this",screen,320*scale_x);
+             font.draw(160*scale_x,0,"Allows you to 'slide'\nthe piece before\nit locks",screen,320*scale_x);
             break;
             case 9:
-             font.draw(160*scale_x,0,"Shows the blocks \nunder your piece.\n\nMust be used\nwith 'dark' to have\nany effect",screen,320*scale_x);
+             font.draw(160*scale_x,0,"The hold piece gets\nused when you drop\nyour current piece, rather than exchange them",screen,320*scale_x);
             break;
             case 10:
+             font.draw(160*scale_x,0,"Sometime get a 1x1\nghost block that can go\ntrough other blocks\nto fill out holes",screen,320*scale_x);
+            break;
+            case 11:
+             font.draw(160*scale_x,0,"Makes the screen dark,\ngood memory training.\n\nFlashlight, thunder or\nflare recommended\nwhen using this",screen,320*scale_x);
+            break;
+            case 12:
+             font.draw(160*scale_x,0,"Shows the blocks \nunder your piece.\n\nMust be used\nwith 'dark' to have\nany effect",screen,320*scale_x);
+            break;
+            case 13:
              font.draw(160*scale_x,0,"The map lights up\nsometimes, getting line\nclears increases the\nchance of 'thunder'.\n\nMust be used\nwith 'dark' to have\nany effect",screen,320*scale_x);
+            break;
+            case 14:
+             font.draw(160*scale_x,0,"Use flares to\nlight up an area around that piece (X default)\n\nMust be used\nwith 'dark' to have\nany effect",screen,320*scale_x);
             break;
         }
 
@@ -1004,7 +1078,7 @@ int game_options()
         SDL_FillRect(screen,&screenrect,background_col);
     }
 
-    for (int i=0; i<11; i++) delete [] menu_str[i].ch;
+    for (int i=0; i<15; i++) delete [] menu_str[i].ch;
     return 0;
 }
 
@@ -1018,7 +1092,7 @@ int game_loop()
 	temprect.w=80;
 	temprect.h=160;
 
-	Mix_PlayMusic(mus_music,0);
+	if (music_enabled) Mix_PlayMusic(mus_music,-1);
 
 	while(!quit)
 	{
@@ -1031,11 +1105,9 @@ int game_loop()
 		sync_move();
 		sync_drop();
 		sync_rot();
-		sync_hardrop(); //Loose-check
+		if (sync_hardrop()) return 1;
 		sync_hold();
-
-		if (bp['a'])
-            flare_use=1;
+        sync_flare();
 
 		if (input_p(but_pause,0))
 		{
@@ -1053,7 +1125,7 @@ int game_loop()
 			}
 		}
 
-		sync_fall(); //loose check here
+		if (sync_fall()) return 1;
 
 		if (opt[OPT_FLASHLIGHT])
 		{
@@ -1066,30 +1138,6 @@ int game_loop()
 				if (ix+x[0]+1<20) board_flashlight[ix+x[0]+1]=1;
 			}
 		}
-
-
-		/*if (1) //opt[OPT_FLASHLIGHT])
-		{
-		    for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<22; iy++) board_dark[ix][iy]=0;
-		    for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<22; iy++) if (board_flare[ix][iy])
-		    {
-		        for (int ix2=ix-1; ix2<=ix+1; ix2++) for (int iy2=iy-1; iy2<=iy+1; iy2++)
-                    if (ix2>=0 && ix2<level_width && iy2>=0 && iy2<22)
-                    {
-                        board_dark[ix2][iy2-2]=1;
-                    }
-		    }
-
-		    if (flare_use) for (int ix=x[0]; ix<x[0]+4; ix++) for (int iy=y[0]; iy<y[0]+4; iy++) if (block[0][ix-x[0]][iy-y[0]])
-		    {
-		        for (int ix2=ix-1; ix2<=ix+1; ix2++) for (int iy2=iy-1; iy2<=iy+1; iy2++)
-                    if (ix2>=0 && ix2<level_width && iy2>=0 && iy2<22)
-                    {
-                        board_dark[ix2][iy2-2]=1;
-                    }
-		    }
-		}*/
-
 
 		if (opt[OPT_THUNDER])
 		{
@@ -1151,14 +1199,22 @@ int new_block(int Aplayer)
 	{
 
 	}
+	else if (althold[Aplayer])
+	{
+	    blocktype[Aplayer]=althold[Aplayer];
+	    althold[Aplayer]=0;
+	    for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
+            block[Aplayer][ix][iy]=blockrot[blocktype[Aplayer]][rot[Aplayer]][ix][iy];
+	}
 	else
 	{
 		//if (!opt[OPT_TRAINING])
 		blocktype[Aplayer]=preview[Aplayer][0];
 		for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
-                block[Aplayer][ix][iy]=blockrot[blocktype[Aplayer]][rot[Aplayer]][ix][iy];
+            block[Aplayer][ix][iy]=blockrot[blocktype[Aplayer]][rot[Aplayer]][ix][iy];
 		for (int i=1; i<5; i++) preview[Aplayer][i-1]=preview[Aplayer][i];
 		preview[Aplayer][4]=1+rand()%7;
+		if (opt[OPT_GHOST] && rand()%10==0) preview[Aplayer][4]=8;
 	}
 
 	sync_shadow();
@@ -1177,8 +1233,8 @@ bool place_block(int Aplayer)
 	else {for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
         if (block[Aplayer][ix][iy]) board[x[Aplayer]+ix][y[Aplayer]+iy]=block[Aplayer][ix][iy];}
 
-    if (flare_use) {for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
-        if (block[Aplayer][ix][iy]) board_flare[x[Aplayer]+ix][y[Aplayer]+iy]=1; flare_use=0;}
+    if (flare_use[Aplayer]) {for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++)
+        if (block[Aplayer][ix][iy]) board_flare[x[Aplayer]+ix][y[Aplayer]+iy]=1; flare_use[Aplayer]=0;}
 
 	check_line();
 	easyspins[Aplayer]=0;
@@ -1328,7 +1384,7 @@ void block_rot(int Aplayer)
 
 void init_block()
 {
-	for (int i=0; i<8; i++) for (int irot=0; irot<4; irot++) for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++) blockrot[i][irot][ix][iy]=0;
+	for (int i=0; i<9; i++) for (int irot=0; irot<4; irot++) for (int ix=0; ix<4; ix++) for (int iy=0; iy<4; iy++) blockrot[i][irot][ix][iy]=0;
 
 	//I block
 	previewx[1]=0;
@@ -1432,7 +1488,7 @@ void init_block()
 
 	//S
 	previewx[5]=4;
-	previewy[5]=-8;
+	previewy[5]=-12;
 
 	blockrot[5][0][0][3]=5;
 	blockrot[5][0][1][3]=5;
@@ -1503,6 +1559,15 @@ void init_block()
 	blockrot[7][3][1][2]=7;
 	blockrot[7][3][0][2]=7;
 	blockrot[7][3][0][3]=7;
+
+	//1x1 block
+	previewx[8]=-4;
+	previewy[8]=0;
+
+    blockrot[8][0][2][1]=8;
+    blockrot[8][1][2][2]=8;
+    blockrot[8][2][1][2]=8;
+    blockrot[8][3][1][1]=8;
 }
 
 int pause_menu()
@@ -1528,12 +1593,14 @@ int pause_menu()
 	menu_text[4].ch=(char*)"Save&quit";
 	menu_text[5].ch=(char*)"Quit";
 
+	Uint32 menutimer=SDL_GetTicks();
+
 	int pause_sel=0;
 
 	while(!quit)
 	{
 		eventblock();
-		if (input_p(but_pause,0)) return 1;
+		if (input_p(but_pause,0)) {gametimer+=SDL_GetTicks()-menutimer; return 1;}
 		if (input_p(but_down,0))
 		{
 			pause_sel++;
@@ -1549,6 +1616,7 @@ int pause_menu()
 		else if (input_p(but_menuOK,0)) switch(pause_sel)
 		{
 			case 0:
+			 gametimer+=SDL_GetTicks()-menutimer;
 			 return 1;
 			break;
 
@@ -1557,7 +1625,7 @@ int pause_menu()
 			break;
 
 			case 2:
-			 //options
+			 options_menu();
 			break;
 
 			case 3:
@@ -1588,6 +1656,8 @@ int pause_menu()
 		SDL_FillRect(screen,&temprect[0],tempcolor[0]);
 	}
 
+
+    gametimer-=SDL_GetTicks()-menutimer;
 	return 1;
 }
 

@@ -7,6 +7,8 @@ Johnny 'Jurting' Enbuske
 
 zear
 -Game ideas
+-Porting
+-Being awesome
 
 Made with SDL and SDL_mixer
 -www.libSDL.com

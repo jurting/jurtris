@@ -11,7 +11,7 @@ void sync_move()
 		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP))) moveticks[iplayer][0]=SDL_GetTicks();
 			if (input_p(but_left ,iplayer-(game_type==GAMETYPE_SP))) moveticks[iplayer][2]=SDL_GetTicks();
 
-		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP)) or
+		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP)) ||
 		 	(input_h(but_right,iplayer-(game_type==GAMETYPE_SP)) &&
 		 	SDL_GetTicks()-moveticks[iplayer][0]>192 && SDL_GetTicks()-moveticks[iplayer][1]>48))
 		 	{
@@ -20,7 +20,7 @@ void sync_move()
 		 		sync_shadow();
 		 	}
 
-		 	else if (input_p(but_left,iplayer-(game_type==GAMETYPE_SP)) or
+		 	else if (input_p(but_left,iplayer-(game_type==GAMETYPE_SP)) ||
 		 	(input_h(but_left,iplayer-(game_type==GAMETYPE_SP)) &&
 		 	SDL_GetTicks()-moveticks[iplayer][2]>192 && SDL_GetTicks()-moveticks[iplayer][3]>48))
 		 	{
@@ -51,10 +51,10 @@ void sync_drop()
             if (blocktype[iplayer-1]==-1) continue;
 
 		 	if ((input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
-		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
+		 	SDL_GetTicks()-gameticks[iplayer][1]>48) ||
 		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))
 		 	{
-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
+		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 || temp[0])
 		 		{
 		 			y[iplayer-1]++;
 		 			gameticks[iplayer][1]=SDL_GetTicks();
@@ -86,7 +86,7 @@ void sync_rot()
             if (blocktype[iplayer-1]==8 && block_collide(x[iplayer-1],y[iplayer-1],rot[iplayer-1],blocktype[iplayer-1],iplayer-1)!=1)
                 continue;
             if (blocktype[iplayer-1]==-1) continue;
-		 	if (input_p(but_up,iplayer-(game_type==GAMETYPE_SP)) or input_p(but_rot,iplayer-(game_type==GAMETYPE_SP)))
+		 	if (input_p(but_up,iplayer-(game_type==GAMETYPE_SP)) || input_p(but_rot,iplayer-(game_type==GAMETYPE_SP)))
 		 	{
 		 		block_rot(iplayer-1);
 		 		sync_shadow();
@@ -236,9 +236,9 @@ bool sync_fall()
 		 {
             if (blocktype[iplayer-1]==-1) continue;
 
-		 	if ( ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] or
+		 	if ( ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] ||
             (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
-		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
+		 	SDL_GetTicks()-gameticks[iplayer][1]>48) ||
 		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP))) ) && !opt[OPT_TRAINING])
 		 	{
 		 	    temp[0]=0;
@@ -247,7 +247,7 @@ bool sync_fall()
 		 	        if (block_collide(x[iplayer-1],i,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1) {temp[0]=1; break;}
 		 	    }
 
-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
+		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 || temp[0])
 		 		{
 		 			y[iplayer-1]++;
 		 			if (opt[OPT_SLIDE]) place[iplayer-1]=1+(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
@@ -255,9 +255,9 @@ bool sync_fall()
 		 			gameticks[iplayer][1]=SDL_GetTicks();
 		 			update_shadow=1;
 		 		}
-		 		else if (( (int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] or
+		 		else if (( (int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] ||
                 (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
-                SDL_GetTicks()-gameticks[iplayer][1]>48) or
+                SDL_GetTicks()-gameticks[iplayer][1]>48) ||
                 input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))) &&
 		 		!block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1))
 		 		{
@@ -304,7 +304,7 @@ void sync_draw()
 
 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
 		 {
-		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
+		 	if (board_dark[ix][iy] || board_flashlight[ix] || thunder || !opt[OPT_DARK])
 		 		apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[board[ix][iy+2]]);
 		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[9]);
 		 }
@@ -380,7 +380,7 @@ void sync_draw()
 
 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
 		 {
-		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
+		 	if (board_dark[ix][iy] || board_flashlight[ix] || thunder || !opt[OPT_DARK])
 		 		apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[board[ix][iy+2]]);
 		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[0]);
 		 }

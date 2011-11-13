@@ -217,3 +217,44 @@
 
 1319743278 c:\cygwin\home\jurting\jurtris\eventblock.cpp
 
+1321133679 source:c:\users\jurting\jurtris\main.cpp
+	"func.h"
+
+1321133679 c:\users\jurting\jurtris\func.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<cstdlib>
+	"SDL/SDL.h"
+	"SDL/SDL_mixer.h"
+	<SDL.h>
+	<SDL_mixer.h>
+	<SDL/SDL.h>
+	<SDL/SDL_mixer.h>
+	<SDL.h>
+	<SDL_mixer.h>
+	<ctime>
+	<cmath>
+	<cstring>
+	"class.h"
+	"jfont.h"
+	"jfont.cpp"
+	"game.cpp"
+	"sdlextra.cpp"
+	"sync.cpp"
+	"eventblock.cpp"
+
+1319735274 c:\users\jurting\jurtris\class.h
+
+1319293550 c:\users\jurting\jurtris\jfont.h
+
+1320238099 c:\users\jurting\jurtris\jfont.cpp
+
+1321144716 c:\users\jurting\jurtris\game.cpp
+
+1321133679 c:\users\jurting\jurtris\sdlextra.cpp
+
+1321133679 c:\users\jurting\jurtris\sync.cpp
+
+1321133679 c:\users\jurting\jurtris\eventblock.cpp
+

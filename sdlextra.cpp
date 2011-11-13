@@ -25,7 +25,7 @@ SDL_Surface *load_img(string Afilename)
 	loadimg=SDL_LoadBMP(Afilename.c_str());
 	optimg=SDL_DisplayFormat(loadimg);
 	SDL_FreeSurface(loadimg);
-	if (scale_x>1 or scale_y>1)
+	if (scale_x>1 || scale_y>1)
 	{
 		SDL_Surface *temp_surface=NULL;
 		temp_surface=SDL_CreateRGBSurface(SDL_SWSURFACE,optimg->w*scale_x,optimg->h*scale_y,screen->format->BitsPerPixel,

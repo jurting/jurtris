@@ -10,8 +10,8 @@
 	<File name="func.h" open="1" top="0" tabpos="2">
 		<Cursor position="1912" topLine="101" />
 	</File>
-	<File name="game.cpp" open="1" top="0" tabpos="6">
-		<Cursor position="41287" topLine="1163" />
+	<File name="game.cpp" open="1" top="1" tabpos="6">
+		<Cursor position="30622" topLine="797" />
 	</File>
 	<File name="jfont.cpp" open="1" top="0" tabpos="8">
 		<Cursor position="598" topLine="12" />
@@ -20,10 +20,10 @@
 		<Cursor position="212" topLine="5" />
 	</File>
 	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="140" topLine="12" />
+		<Cursor position="901" topLine="32" />
 	</File>
-	<File name="sdlextra.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="347" topLine="1" />
+	<File name="sdlextra.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="347" topLine="13" />
 	</File>
 	<File name="sync.cpp" open="1" top="0" tabpos="3">
 		<Cursor position="7678" topLine="242" />

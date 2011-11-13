@@ -25,15 +25,15 @@ void game_init()
 	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers))
 		cout << "sound error: mix_open (" << __FILE__ << " " << __LINE__ << ")" << endl;
 
-	mus_drop=Mix_LoadWAV("sound/drop.wav");
-	mus_music=Mix_LoadMUS("music/allsort.mod");
-	sur_block=load_img("gfx/block.bmp");
-	sur_border=load_img("gfx/border.bmp");
-	sur_square=load_img("gfx/square.bmp");
-	sur_hold=load_img("gfx/hold.bmp");
-	textbar=load_img("gfx/textbar.bmp");
-	menu_back=load_img("gfx/menu_background.bmp");
-	menu_back_dark=load_img("gfx/menu_background_dark.bmp");
+	mus_drop=Mix_LoadWAV(DATA_PATH "sound/drop.wav");
+	mus_music=Mix_LoadMUS(DATA_PATH "music/allsort.mod");
+	sur_block=load_img(DATA_PATH "gfx/block.bmp");
+	sur_border=load_img(DATA_PATH "gfx/border.bmp");
+	sur_square=load_img(DATA_PATH "gfx/square.bmp");
+	sur_hold=load_img(DATA_PATH "gfx/hold.bmp");
+	textbar=load_img(DATA_PATH "gfx/textbar.bmp");
+	menu_back=load_img(DATA_PATH "gfx/menu_background.bmp");
+	menu_back_dark=load_img(DATA_PATH "gfx/menu_background_dark.bmp");
 	Mix_AllocateChannels(16);
 
 	for (int i=0; i<6; i++)
@@ -68,7 +68,7 @@ void game_init()
 	}
 
     for (int i=0; i<MENU_MAX; i++) for (int i2=0; i2<menu_num[i]; i2++) menustr[i][i2].ch=new char[32];
-    font.load("font/font.bmp",2*scale_x,5*scale_x,screen,255,0,255);
+    font.load(DATA_PATH "font/font.bmp",2*scale_x,5*scale_x,screen,255,0,255);
 
 	init_block();
 	return;
@@ -79,12 +79,12 @@ void generate_config(bool overwrite)
 	if (!overwrite)
 	{
 		ifstream fin;
-		fin.open("config.cfg");
+		fin.open(DATA_PATH "config.cfg");
 		if (fin.is_open() && fin.good() && !fin.eof() && !fin.fail() && !fin.bad()) {fin.close(); return;}
 	}
 
 	ofstream fout;
-	fout.open("config.cfg",ios_base::trunc);
+	fout.open(DATA_PATH "config.cfg",ios_base::trunc);
 	#ifdef dingux
 	fout << VERSION << endl <<
 	      D_VERSION << endl <<
@@ -93,8 +93,8 @@ void generate_config(bool overwrite)
     "//0: Keyboard. button=ascii id" << endl <<
     "//1: Joystick +axis. button=axis" << endl <<
     "//2: Joystick -axis. button=axis" << endl <<
-    "//3: Joystick +dpad. button=x or y" << endl <<
-    "//4: Joystick -dpad. button=x or y" << endl <<
+    "//3: Joystick +dpad. button=x || y" << endl <<
+    "//4: Joystick -dpad. button=x || y" << endl <<
     "//5: Joystick button. button=button id" << endl <<
 	"scaling_x=" << 1 << endl <<
 	"scaling_y=" << 1 << endl <<
@@ -180,8 +180,8 @@ void generate_config(bool overwrite)
     "//0: Keyboard. button=ascii id" << endl <<
     "//1: Joystick +axis. button=axis" << endl <<
     "//2: Joystick -axis. button=axis" << endl <<
-    "//3: Joystick +dpad. button=x or y" << endl <<
-    "//4: Joystick -dpad. button=x or y" << endl <<
+    "//3: Joystick +dpad. button=x || y" << endl <<
+    "//4: Joystick -dpad. button=x || y" << endl <<
     "//5: Joystick button. button=button id" << endl <<
 	"scaling_x=" << 1 << endl <<
 	"scaling_y=" << 1 << endl <<
@@ -216,8 +216,8 @@ void generate_config(bool overwrite)
     "//0: Keyboard. button=ascii id" << endl <<
     "//1: Joystick +axis. button=axis" << endl <<
     "//2: Joystick -axis. button=axis" << endl <<
-    "//3: Joystick +dpad. button=x or y" << endl <<
-    "//4: Joystick -dpad. button=x or y" << endl <<
+    "//3: Joystick +dpad. button=x || y" << endl <<
+    "//4: Joystick -dpad. button=x || y" << endl <<
     "//5: Joystick button. button=button id" << endl <<
 	"scaling_x=" << 2 << endl <<
 	"scaling_y=" << 2 << endl <<
@@ -313,7 +313,7 @@ void load_config()
 	screen_bit=16;
 
 	ifstream fin;
-	fin.open("config.cfg");
+	fin.open(DATA_PATH "config.cfg");
 	fin >> versionchar;
 	fin >> versiondouble;
 
@@ -327,7 +327,7 @@ void load_config()
 		fin >> filechar;
 		for (int i=0; i<31; i++)
 		{
-			if (filechar[i]==0 or filechar[i]==10) break;
+			if (filechar[i]==0 || filechar[i]==10) break;
 
 			if (copy>=0) {resultchar[copy]=filechar[i]; copy++;}
 			if (filechar[i]=='=') {copy=0; matchchar[i]=0;}
@@ -408,7 +408,7 @@ double cfg_getdouble(char str[32])
 
 	for (int i=0; i<32; i++)
 	{
-		if (str[i]==0 or str[i]==10) break;
+		if (str[i]==0 || str[i]==10) break;
 
 		if (copy>=0) {temp_char[copy]=str[i]; copy++;}
 		if (str[i]=='=') copy=0;
@@ -419,7 +419,7 @@ double cfg_getdouble(char str[32])
 
 bool str_match(char *str,char *str2)
 {
-	for (int i=0; i<32 && (str[i]!=0 or str2[i]!=0); i++)
+	for (int i=0; i<32 && (str[i]!=0 || str2[i]!=0); i++)
 	{
 		if (str[i]!=str2[i] && !(str2[i]=='#' && str[i]>'0' && str[i]<='9')) return 0;
 	}
@@ -554,7 +554,7 @@ int main_menu(int menu_choice)
         }
         //font.draw(0,0,flip_time,screen);
 
-        if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
+        if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
         {
             SDL_Flip(screen);
             fliptimer=SDL_GetTicks();
@@ -623,7 +623,7 @@ int main_menu(int menu_choice)
 				}
 			}
 
-			if (mouse_x!=mouse_oldx or mouse_y!=mouse_oldy or mbp)
+			if (mouse_x!=mouse_oldx || mouse_y!=mouse_oldy || mbp)
 			{
 				if      (mouse_x>=32  && mouse_x<96  && mouse_y>=64  && mouse_y<128) {menu_drawframe=1; menu_sel=0;
 				if (mbp) if (!main_menu(1)) return 0;}
@@ -737,18 +737,18 @@ int main_menu(int menu_choice)
 			{
 				game_sel++;
 				if (game_sel>=15) game_sel=0;
-				if (game_sel==2 or game_sel==6) game_sel++;
+				if (game_sel==2 || game_sel==6) game_sel++;
 			}
 			if (input_p(but_up,0))
 			{
 				game_sel--;
 				if (game_sel<0) game_sel=14;
-				if (game_sel==2 or game_sel==6) game_sel--;
+				if (game_sel==2 || game_sel==6) game_sel--;
 			}
 
-			if (mouse_x!=mouse_oldx or mouse_y!=mouse_oldy) game_sel=mouse_y/16;
+			if (mouse_x!=mouse_oldx || mouse_y!=mouse_oldy) game_sel=mouse_y/16;
 
-			if (input_p(but_menuOK,0) or input_p(but_right,0) or input_p(but_left,0) or mbp)
+			if (input_p(but_menuOK,0) || input_p(but_right,0) || input_p(but_left,0) || mbp)
 			{
 				if (game_sel==0)
 				{
@@ -802,8 +802,10 @@ void credit_menu()
         font.draw(8*scale_x,font.h,"Programming and 'art' (:P)",screen);
         font.draw(0,font.h*3,"Zear:",screen);
         font.draw(8*scale_x,font.h*4,"Game ideas",screen);
-        font.draw(0,font.h*6,"Made with SDL and SDL_Mixer",screen);
-        font.draw(8*scale_x,font.h*7,"www.libSDL.org",screen);
+        font.draw(8*scale_x,font.h*5,"Porting",screen);
+        font.draw(8*scale_x,font.h*6,"Being awesome",screen);
+        font.draw(0,font.h*8,"Made with SDL and SDL_Mixer",screen);
+        font.draw(8*scale_x,font.h*9,"www.libSDL.org",screen);
 
         SDL_Flip(screen);
         SDL_FillRect(screen,&screenrect,SDL_MapRGB(screen->format,0,0,0));
@@ -1153,7 +1155,7 @@ int game_loop()
         font.draw(0,0,joy[0].hatold[1],screen);
 		sync_draw();
 
-		if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
+		if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
         {
             SDL_Flip(screen);
             fliptimer=SDL_GetTicks();
@@ -1263,7 +1265,7 @@ int block_collide(int Ax, int Ay, int Arot, int Atype, int Aplayer)
 
     for (int ix=0; ix<4;  ix++) for (int iy=0; iy<4; iy++)
     {
-        if (Ax+ix<0 or Ax+ix>=level_width or Ay+iy<0 or Ay+iy>=22)
+        if (Ax+ix<0 || Ax+ix>=level_width || Ay+iy<0 || Ay+iy>=22)
         {
             if (blockrot[Atype][Arot][ix][iy]) is_free=0;
             continue;
@@ -1646,7 +1648,7 @@ int pause_menu()
 
 		for (int i=0; i<6; i++) font.draw(16*scale_x,(16+i*16)*scale_y,menu_text[i].ch,screen);
 
-        if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
+        if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
         {
             SDL_Flip(screen);
             fliptimer=SDL_GetTicks();
@@ -1719,7 +1721,7 @@ void stats_screen()
 		font.draw(8*scale_x,screenrect.h-(40*scale_y),(char*)"Save stats: yes",screen);
 		font.draw(8*scale_x,screenrect.h-(24*scale_y),(char*)"Quit to menu",screen);
 
-		if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
+		if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
         {
             SDL_Flip(screen);
             fliptimer=SDL_GetTicks();

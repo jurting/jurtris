@@ -1,0 +1,383 @@
+diff --git a/eventblock.cpp b/eventblock.cpp
+index 11e87fa..7c0494e 100644
+--- a/eventblock.cpp
++++ b/eventblock.cpp
+@@ -59,22 +59,22 @@ void eventblock()
+ 			break;
+ 
+ 			case SDL_JOYHATMOTION:
+-			 if (event.jhat.value==SDL_HAT_RIGHT or event.jhat.value==SDL_HAT_RIGHTUP or event.jhat.value==SDL_HAT_RIGHTDOWN){
++			 if (event.jhat.value==SDL_HAT_RIGHT || event.jhat.value==SDL_HAT_RIGHTUP || event.jhat.value==SDL_HAT_RIGHTDOWN){
+ 			     joy[event.jhat.which].hat[0]=1;
+                 if (event.jhat.value==SDL_HAT_RIGHT)
+ 			     joy[event.jhat.which].hat[1]=0;}
+ 
+-             if (event.jhat.value==SDL_HAT_DOWN or event.jhat.value==SDL_HAT_RIGHTDOWN or event.jhat.value==SDL_HAT_LEFTDOWN){
++             if (event.jhat.value==SDL_HAT_DOWN || event.jhat.value==SDL_HAT_RIGHTDOWN || event.jhat.value==SDL_HAT_LEFTDOWN){
+ 			     joy[event.jhat.which].hat[1]=1;
+                 if (event.jhat.value==SDL_HAT_DOWN)
+ 			     joy[event.jhat.which].hat[0]=0;}
+ 
+-             if (event.jhat.value==SDL_HAT_LEFT or event.jhat.value==SDL_HAT_LEFTUP or event.jhat.value==SDL_HAT_LEFTDOWN){
++             if (event.jhat.value==SDL_HAT_LEFT || event.jhat.value==SDL_HAT_LEFTUP || event.jhat.value==SDL_HAT_LEFTDOWN){
+ 			     joy[event.jhat.which].hat[0]=-1;
+                 if (event.jhat.value==SDL_HAT_LEFT)
+ 			     joy[event.jhat.which].hat[1]=0;}
+ 
+-			 if (event.jhat.value==SDL_HAT_UP or event.jhat.value==SDL_HAT_RIGHTUP or event.jhat.value==SDL_HAT_LEFTUP){
++			 if (event.jhat.value==SDL_HAT_UP || event.jhat.value==SDL_HAT_RIGHTUP || event.jhat.value==SDL_HAT_LEFTUP){
+ 			     joy[event.jhat.which].hat[1]=-1;
+                 if (event.jhat.value==SDL_HAT_UP)
+ 			     joy[event.jhat.which].hat[0]=0;}
+diff --git a/func.h b/func.h
+index d26ef49..3d861c3 100644
+--- a/func.h
++++ b/func.h
+@@ -6,14 +6,22 @@
+ #ifdef dingux
+ #include "SDL/SDL.h"
+ #include "SDL/SDL_mixer.h"
++#define DATA_PATH "./"
+ 
+ #elif  caanoo
+ #include <SDL.h>
+ #include <SDL_mixer.h>
++#define DATA_PATH "./"
++
++#elif DC_ROMDISK /* Dreamcast with romdisk */
++#include <SDL/SDL.h>
++#include <SDL/SDL_mixer.h>
++#define DATA_PATH "/rd/" /* for Dreamcast's romdisk */
+ 
+ #else
+ #include <SDL.h>
+ #include <SDL_mixer.h>
++#define DATA_PATH "./"
+ #endif
+ 
+ #include <ctime>
+diff --git a/game.cpp b/game.cpp
+index 63fd40d..5ac0cea 100644
+--- a/game.cpp
++++ b/game.cpp
+@@ -25,15 +25,15 @@ void game_init()
+ 	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers))
+ 		cout << "sound error: mix_open (" << __FILE__ << " " << __LINE__ << ")" << endl;
+ 
+-	mus_drop=Mix_LoadWAV("sound/drop.wav");
+-	mus_music=Mix_LoadMUS("music/allsort.mod");
+-	sur_block=load_img("gfx/block.bmp");
+-	sur_border=load_img("gfx/border.bmp");
+-	sur_square=load_img("gfx/square.bmp");
+-	sur_hold=load_img("gfx/hold.bmp");
+-	textbar=load_img("gfx/textbar.bmp");
+-	menu_back=load_img("gfx/menu_background.bmp");
+-	menu_back_dark=load_img("gfx/menu_background_dark.bmp");
++	mus_drop=Mix_LoadWAV(DATA_PATH "sound/drop.wav");
++	mus_music=Mix_LoadMUS(DATA_PATH "music/allsort.mod");
++	sur_block=load_img(DATA_PATH "gfx/block.bmp");
++	sur_border=load_img(DATA_PATH "gfx/border.bmp");
++	sur_square=load_img(DATA_PATH "gfx/square.bmp");
++	sur_hold=load_img(DATA_PATH "gfx/hold.bmp");
++	textbar=load_img(DATA_PATH "gfx/textbar.bmp");
++	menu_back=load_img(DATA_PATH "gfx/menu_background.bmp");
++	menu_back_dark=load_img(DATA_PATH "gfx/menu_background_dark.bmp");
+ 	Mix_AllocateChannels(16);
+ 
+ 	for (int i=0; i<6; i++)
+@@ -68,7 +68,7 @@ void game_init()
+ 	}
+ 
+     for (int i=0; i<MENU_MAX; i++) for (int i2=0; i2<menu_num[i]; i2++) menustr[i][i2].ch=new char[32];
+-    font.load("font/font.bmp",2*scale_x,5*scale_x,screen,255,0,255);
++    font.load(DATA_PATH "font/font.bmp",2*scale_x,5*scale_x,screen,255,0,255);
+ 
+ 	init_block();
+ 	return;
+@@ -79,12 +79,12 @@ void generate_config(bool overwrite)
+ 	if (!overwrite)
+ 	{
+ 		ifstream fin;
+-		fin.open("config.cfg");
++		fin.open(DATA_PATH "config.cfg");
+ 		if (fin.is_open() && fin.good() && !fin.eof() && !fin.fail() && !fin.bad()) {fin.close(); return;}
+ 	}
+ 
+ 	ofstream fout;
+-	fout.open("config.cfg",ios_base::trunc);
++	fout.open(DATA_PATH "config.cfg",ios_base::trunc);
+ 	#ifdef dingux
+ 	fout << VERSION << endl <<
+ 	      D_VERSION << endl <<
+@@ -93,8 +93,8 @@ void generate_config(bool overwrite)
+     "//0: Keyboard. button=ascii id" << endl <<
+     "//1: Joystick +axis. button=axis" << endl <<
+     "//2: Joystick -axis. button=axis" << endl <<
+-    "//3: Joystick +dpad. button=x or y" << endl <<
+-    "//4: Joystick -dpad. button=x or y" << endl <<
++    "//3: Joystick +dpad. button=x || y" << endl <<
++    "//4: Joystick -dpad. button=x || y" << endl <<
+     "//5: Joystick button. button=button id" << endl <<
+ 	"scaling_x=" << 1 << endl <<
+ 	"scaling_y=" << 1 << endl <<
+@@ -180,8 +180,8 @@ void generate_config(bool overwrite)
+     "//0: Keyboard. button=ascii id" << endl <<
+     "//1: Joystick +axis. button=axis" << endl <<
+     "//2: Joystick -axis. button=axis" << endl <<
+-    "//3: Joystick +dpad. button=x or y" << endl <<
+-    "//4: Joystick -dpad. button=x or y" << endl <<
++    "//3: Joystick +dpad. button=x || y" << endl <<
++    "//4: Joystick -dpad. button=x || y" << endl <<
+     "//5: Joystick button. button=button id" << endl <<
+ 	"scaling_x=" << 1 << endl <<
+ 	"scaling_y=" << 1 << endl <<
+@@ -216,8 +216,8 @@ void generate_config(bool overwrite)
+     "//0: Keyboard. button=ascii id" << endl <<
+     "//1: Joystick +axis. button=axis" << endl <<
+     "//2: Joystick -axis. button=axis" << endl <<
+-    "//3: Joystick +dpad. button=x or y" << endl <<
+-    "//4: Joystick -dpad. button=x or y" << endl <<
++    "//3: Joystick +dpad. button=x || y" << endl <<
++    "//4: Joystick -dpad. button=x || y" << endl <<
+     "//5: Joystick button. button=button id" << endl <<
+ 	"scaling_x=" << 2 << endl <<
+ 	"scaling_y=" << 2 << endl <<
+@@ -313,7 +313,7 @@ void load_config()
+ 	screen_bit=16;
+ 
+ 	ifstream fin;
+-	fin.open("config.cfg");
++	fin.open(DATA_PATH "config.cfg");
+ 	fin >> versionchar;
+ 	fin >> versiondouble;
+ 
+@@ -327,7 +327,7 @@ void load_config()
+ 		fin >> filechar;
+ 		for (int i=0; i<31; i++)
+ 		{
+-			if (filechar[i]==0 or filechar[i]==10) break;
++			if (filechar[i]==0 || filechar[i]==10) break;
+ 
+ 			if (copy>=0) {resultchar[copy]=filechar[i]; copy++;}
+ 			if (filechar[i]=='=') {copy=0; matchchar[i]=0;}
+@@ -408,7 +408,7 @@ double cfg_getdouble(char str[32])
+ 
+ 	for (int i=0; i<32; i++)
+ 	{
+-		if (str[i]==0 or str[i]==10) break;
++		if (str[i]==0 || str[i]==10) break;
+ 
+ 		if (copy>=0) {temp_char[copy]=str[i]; copy++;}
+ 		if (str[i]=='=') copy=0;
+@@ -419,7 +419,7 @@ double cfg_getdouble(char str[32])
+ 
+ bool str_match(char *str,char *str2)
+ {
+-	for (int i=0; i<32 && (str[i]!=0 or str2[i]!=0); i++)
++	for (int i=0; i<32 && (str[i]!=0 || str2[i]!=0); i++)
+ 	{
+ 		if (str[i]!=str2[i] && !(str2[i]=='#' && str[i]>'0' && str[i]<='9')) return 0;
+ 	}
+@@ -554,7 +554,7 @@ int main_menu(int menu_choice)
+         }
+         //font.draw(0,0,flip_time,screen);
+ 
+-        if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
++        if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
+         {
+             SDL_Flip(screen);
+             fliptimer=SDL_GetTicks();
+@@ -623,7 +623,7 @@ int main_menu(int menu_choice)
+ 				}
+ 			}
+ 
+-			if (mouse_x!=mouse_oldx or mouse_y!=mouse_oldy or mbp)
++			if (mouse_x!=mouse_oldx || mouse_y!=mouse_oldy || mbp)
+ 			{
+ 				if      (mouse_x>=32  && mouse_x<96  && mouse_y>=64  && mouse_y<128) {menu_drawframe=1; menu_sel=0;
+ 				if (mbp) if (!main_menu(1)) return 0;}
+@@ -737,18 +737,18 @@ int main_menu(int menu_choice)
+ 			{
+ 				game_sel++;
+ 				if (game_sel>=15) game_sel=0;
+-				if (game_sel==2 or game_sel==6) game_sel++;
++				if (game_sel==2 || game_sel==6) game_sel++;
+ 			}
+ 			if (input_p(but_up,0))
+ 			{
+ 				game_sel--;
+ 				if (game_sel<0) game_sel=14;
+-				if (game_sel==2 or game_sel==6) game_sel--;
++				if (game_sel==2 || game_sel==6) game_sel--;
+ 			}
+ 
+-			if (mouse_x!=mouse_oldx or mouse_y!=mouse_oldy) game_sel=mouse_y/16;
++			if (mouse_x!=mouse_oldx || mouse_y!=mouse_oldy) game_sel=mouse_y/16;
+ 
+-			if (input_p(but_menuOK,0) or input_p(but_right,0) or input_p(but_left,0) or mbp)
++			if (input_p(but_menuOK,0) || input_p(but_right,0) || input_p(but_left,0) || mbp)
+ 			{
+ 				if (game_sel==0)
+ 				{
+@@ -1153,7 +1153,7 @@ int game_loop()
+         font.draw(0,0,joy[0].hatold[1],screen);
+ 		sync_draw();
+ 
+-		if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
++		if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
+         {
+             SDL_Flip(screen);
+             fliptimer=SDL_GetTicks();
+@@ -1263,7 +1263,7 @@ int block_collide(int Ax, int Ay, int Arot, int Atype, int Aplayer)
+ 
+     for (int ix=0; ix<4;  ix++) for (int iy=0; iy<4; iy++)
+     {
+-        if (Ax+ix<0 or Ax+ix>=level_width or Ay+iy<0 or Ay+iy>=22)
++        if (Ax+ix<0 || Ax+ix>=level_width || Ay+iy<0 || Ay+iy>=22)
+         {
+             if (blockrot[Atype][Arot][ix][iy]) is_free=0;
+             continue;
+@@ -1646,7 +1646,7 @@ int pause_menu()
+ 
+ 		for (int i=0; i<6; i++) font.draw(16*scale_x,(16+i*16)*scale_y,menu_text[i].ch,screen);
+ 
+-        if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
++        if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
+         {
+             SDL_Flip(screen);
+             fliptimer=SDL_GetTicks();
+@@ -1719,7 +1719,7 @@ void stats_screen()
+ 		font.draw(8*scale_x,screenrect.h-(40*scale_y),(char*)"Save stats: yes",screen);
+ 		font.draw(8*scale_x,screenrect.h-(24*scale_y),(char*)"Quit to menu",screen);
+ 
+-		if (SDL_GetTicks()-fliptimer>flip_time or !time_flips)
++		if (SDL_GetTicks()-fliptimer>flip_time || !time_flips)
+         {
+             SDL_Flip(screen);
+             fliptimer=SDL_GetTicks();
+diff --git a/main.cpp b/main.cpp
+index cb5ea43..f3abde2 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -1,6 +1,13 @@
+ //#define dingux 1
+ #include "func.h"
+ 
++#if defined(DC_ROMDISK)
++/* romdisk */
++extern uint8 romdisk[];
++KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
++KOS_INIT_ROMDISK(romdisk);
++#endif
++
+ //int main (int argc, char const* argv[])
+ int main(int argc, char* argv[])
+ {
+diff --git a/sdlextra.cpp b/sdlextra.cpp
+index 4f36fc1..fdb27f2 100644
+--- a/sdlextra.cpp
++++ b/sdlextra.cpp
+@@ -25,7 +25,7 @@ SDL_Surface *load_img(string Afilename)
+ 	loadimg=SDL_LoadBMP(Afilename.c_str());
+ 	optimg=SDL_DisplayFormat(loadimg);
+ 	SDL_FreeSurface(loadimg);
+-	if (scale_x>1 or scale_y>1)
++	if (scale_x>1 || scale_y>1)
+ 	{
+ 		SDL_Surface *temp_surface=NULL;
+ 		temp_surface=SDL_CreateRGBSurface(SDL_SWSURFACE,optimg->w*scale_x,optimg->h*scale_y,screen->format->BitsPerPixel,
+diff --git a/sync.cpp b/sync.cpp
+index 9670e07..4200c4d 100644
+--- a/sync.cpp
++++ b/sync.cpp
+@@ -11,7 +11,7 @@ void sync_move()
+ 		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP))) moveticks[iplayer][0]=SDL_GetTicks();
+ 			if (input_p(but_left ,iplayer-(game_type==GAMETYPE_SP))) moveticks[iplayer][2]=SDL_GetTicks();
+ 
+-		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP)) or
++		 	if (input_p(but_right,iplayer-(game_type==GAMETYPE_SP)) ||
+ 		 	(input_h(but_right,iplayer-(game_type==GAMETYPE_SP)) &&
+ 		 	SDL_GetTicks()-moveticks[iplayer][0]>192 && SDL_GetTicks()-moveticks[iplayer][1]>48))
+ 		 	{
+@@ -20,7 +20,7 @@ void sync_move()
+ 		 		sync_shadow();
+ 		 	}
+ 
+-		 	else if (input_p(but_left,iplayer-(game_type==GAMETYPE_SP)) or
++		 	else if (input_p(but_left,iplayer-(game_type==GAMETYPE_SP)) ||
+ 		 	(input_h(but_left,iplayer-(game_type==GAMETYPE_SP)) &&
+ 		 	SDL_GetTicks()-moveticks[iplayer][2]>192 && SDL_GetTicks()-moveticks[iplayer][3]>48))
+ 		 	{
+@@ -51,10 +51,10 @@ void sync_drop()
+             if (blocktype[iplayer-1]==-1) continue;
+ 
+ 		 	if ((input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
+-		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
++		 	SDL_GetTicks()-gameticks[iplayer][1]>48) ||
+ 		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))
+ 		 	{
+-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
++		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 || temp[0])
+ 		 		{
+ 		 			y[iplayer-1]++;
+ 		 			gameticks[iplayer][1]=SDL_GetTicks();
+@@ -86,7 +86,7 @@ void sync_rot()
+             if (blocktype[iplayer-1]==8 && block_collide(x[iplayer-1],y[iplayer-1],rot[iplayer-1],blocktype[iplayer-1],iplayer-1)!=1)
+                 continue;
+             if (blocktype[iplayer-1]==-1) continue;
+-		 	if (input_p(but_up,iplayer-(game_type==GAMETYPE_SP)) or input_p(but_rot,iplayer-(game_type==GAMETYPE_SP)))
++		 	if (input_p(but_up,iplayer-(game_type==GAMETYPE_SP)) || input_p(but_rot,iplayer-(game_type==GAMETYPE_SP)))
+ 		 	{
+ 		 		block_rot(iplayer-1);
+ 		 		sync_shadow();
+@@ -236,9 +236,9 @@ bool sync_fall()
+ 		 {
+             if (blocktype[iplayer-1]==-1) continue;
+ 
+-		 	if ( ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] or
++		 	if ( ((int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>fall[iplayer-1] ||
+             (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
+-		 	SDL_GetTicks()-gameticks[iplayer][1]>48) or
++		 	SDL_GetTicks()-gameticks[iplayer][1]>48) ||
+ 		 	input_p(but_down,iplayer-(game_type==GAMETYPE_SP))) ) && !opt[OPT_TRAINING])
+ 		 	{
+ 		 	    temp[0]=0;
+@@ -247,7 +247,7 @@ bool sync_fall()
+ 		 	        if (block_collide(x[iplayer-1],i,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1) {temp[0]=1; break;}
+ 		 	    }
+ 
+-		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 or temp[0])
++		 		if (block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1)==1 || temp[0])
+ 		 		{
+ 		 			y[iplayer-1]++;
+ 		 			if (opt[OPT_SLIDE]) place[iplayer-1]=1+(SDL_GetTicks()-gametimer)/falltime[iplayer-1];
+@@ -255,9 +255,9 @@ bool sync_fall()
+ 		 			gameticks[iplayer][1]=SDL_GetTicks();
+ 		 			update_shadow=1;
+ 		 		}
+-		 		else if (( (int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] or
++		 		else if (( (int)((SDL_GetTicks()-gametimer)/falltime[iplayer-1])>place[iplayer-1] ||
+                 (!opt[OPT_SLIDE] && (input_h(but_down,iplayer-(game_type==GAMETYPE_SP)) &&
+-                SDL_GetTicks()-gameticks[iplayer][1]>48) or
++                SDL_GetTicks()-gameticks[iplayer][1]>48) ||
+                 input_p(but_down,iplayer-(game_type==GAMETYPE_SP)))) &&
+ 		 		!block_collide(x[iplayer-1],y[iplayer-1]+1,rot[iplayer-1],blocktype[iplayer-1],iplayer-1))
+ 		 		{
+@@ -304,7 +304,7 @@ void sync_draw()
+ 
+ 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
+ 		 {
+-		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
++		 	if (board_dark[ix][iy] || board_flashlight[ix] || thunder || !opt[OPT_DARK])
+ 		 		apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[board[ix][iy+2]]);
+ 		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[9]);
+ 		 }
+@@ -380,7 +380,7 @@ void sync_draw()
+ 
+ 		 for (int ix=0; ix<level_width; ix++) for (int iy=0; iy<20; iy++)
+ 		 {
+-		 	if (board_dark[ix][iy] or board_flashlight[ix] or thunder or !opt[OPT_DARK])
++		 	if (board_dark[ix][iy] || board_flashlight[ix] || thunder || !opt[OPT_DARK])
+ 		 		apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[board[ix][iy+2]]);
+ 		 	else apply_surface((16+ix*8)*scale_x,(16+iy*8)*scale_y,sur_block,screen,&block_rect[0]);
+ 		 }

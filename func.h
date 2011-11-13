@@ -6,14 +6,22 @@
 #ifdef dingux
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
+#define DATA_PATH "./"
 
 #elif  caanoo
 #include <SDL.h>
 #include <SDL_mixer.h>
+#define DATA_PATH "./"
+
+#elif DC_ROMDISK /* Dreamcast with romdisk */
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+#define DATA_PATH "/rd/" /* for Dreamcast's romdisk */
 
 #else
 #include <SDL.h>
 #include <SDL_mixer.h>
+#define DATA_PATH "./"
 #endif
 
 #include <ctime>

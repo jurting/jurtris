@@ -1,6 +1,13 @@
 //#define dingux 1
 #include "func.h"
 
+#if defined(DC_ROMDISK)
+/* romdisk */
+extern uint8 romdisk[];
+KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
+KOS_INIT_ROMDISK(romdisk);
+#endif
+
 //int main (int argc, char const* argv[])
 int main(int argc, char* argv[])
 {

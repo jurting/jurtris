@@ -59,22 +59,22 @@ void eventblock()
 			break;
 
 			case SDL_JOYHATMOTION:
-			 if (event.jhat.value==SDL_HAT_RIGHT or event.jhat.value==SDL_HAT_RIGHTUP or event.jhat.value==SDL_HAT_RIGHTDOWN){
+			 if (event.jhat.value==SDL_HAT_RIGHT || event.jhat.value==SDL_HAT_RIGHTUP || event.jhat.value==SDL_HAT_RIGHTDOWN){
 			     joy[event.jhat.which].hat[0]=1;
                 if (event.jhat.value==SDL_HAT_RIGHT)
 			     joy[event.jhat.which].hat[1]=0;}
 
-             if (event.jhat.value==SDL_HAT_DOWN or event.jhat.value==SDL_HAT_RIGHTDOWN or event.jhat.value==SDL_HAT_LEFTDOWN){
+             if (event.jhat.value==SDL_HAT_DOWN || event.jhat.value==SDL_HAT_RIGHTDOWN || event.jhat.value==SDL_HAT_LEFTDOWN){
 			     joy[event.jhat.which].hat[1]=1;
                 if (event.jhat.value==SDL_HAT_DOWN)
 			     joy[event.jhat.which].hat[0]=0;}
 
-             if (event.jhat.value==SDL_HAT_LEFT or event.jhat.value==SDL_HAT_LEFTUP or event.jhat.value==SDL_HAT_LEFTDOWN){
+             if (event.jhat.value==SDL_HAT_LEFT || event.jhat.value==SDL_HAT_LEFTUP || event.jhat.value==SDL_HAT_LEFTDOWN){
 			     joy[event.jhat.which].hat[0]=-1;
                 if (event.jhat.value==SDL_HAT_LEFT)
 			     joy[event.jhat.which].hat[1]=0;}
 
-			 if (event.jhat.value==SDL_HAT_UP or event.jhat.value==SDL_HAT_RIGHTUP or event.jhat.value==SDL_HAT_LEFTUP){
+			 if (event.jhat.value==SDL_HAT_UP || event.jhat.value==SDL_HAT_RIGHTUP || event.jhat.value==SDL_HAT_LEFTUP){
 			     joy[event.jhat.which].hat[1]=-1;
                 if (event.jhat.value==SDL_HAT_UP)
 			     joy[event.jhat.which].hat[0]=0;}
